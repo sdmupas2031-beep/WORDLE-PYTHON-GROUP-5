@@ -49,23 +49,25 @@ def get_valid_guess(word_length, word_info, hint_used):
 
 def evaluate_guess(secret, guess):
     """Compares the guess against the secret word and returns a color-coded string."""
-    result = [""] * len(secret) # Array to hold formatted letters
-    secret_chars = list(secret) # Convert secret word into an array of characters
+    result = [""] * len(secret)
+    secret_chars = list(secret)
 
-     #First loops
+    # First pass: Exact matches (Green)
     for i in range(len(guess)):
         if guess[i] == secret_chars[i]:
-            result[i] == f"{GREEN}{guess[i]}{RESET}"
+            result[i] = f"{GREEN}{guess[i]}{RESET}"
             secret_chars[i] = None
-
+    # Second pass: Misplaced letters (Yellow) or misses (Gray)
     for i in range(len(guess)):
-        if guess[i] == "":
+        if result[i] == "":
             if guess[i] in secret_chars:
                 result[i] = f"{YELLOW}{guess[i]}{RESET}"
                 secret_chars[secret_chars.index(guess[i])] = None
             else:
                 result[i] = f"{GRAY}{guess[i]}{RESET}"
+
     return " ".join(result)
+    
 
     def play_game():
     max_attempts = 6
