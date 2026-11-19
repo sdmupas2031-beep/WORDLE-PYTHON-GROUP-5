@@ -104,3 +104,67 @@ PROCEDURE DisplayVocabCard(word, info)
     DISPLAY "Example: " + info.example
     DISPLAY "-----------------------"
 END PROCEDURE
+
+PROCEDURE PlayRound(missedWords)
+    (categoryName, categoryDict) ← ChooseCategory()
+    (secretWord, wordInfo) ← PickRandomWord(categoryDict)
+
+    maxAttempts ← 6
+    attempt ← 0
+    guessHistory ← EMPTY List
+    hintUsed ← FALSE
+
+    DISPLAY "Category: " + categoryName
+    DISPLAY "Guess the " + LENGTH(secretWord) + "-letter STEM term in " + maxAttempts + " tries."
+
+    WHILE attempt < maxAttempts DO
+        (guess, hintUsed) ← GetValidGuess(LENGTH(secretWord), wordInfo, hintUsed)
+        attempt ← attempt + 1
+
+        coloredFeedback ← EvaluateGuess(secretWord, guess)
+        APPEND coloredFeedback TO guessHistory
+
+        DISPLAY "--- Board ---"
+        FOR EACH row IN guessHistory DO
+            DISPLAY row
+        END FOR
+        DISPLAY "Attempts left: " + (maxAttempts - attempt)
+
+        IF guess EQUALS secretWord THEN
+            DISPLAY "Correct! You solved it in " + attempt + " tries!"
+            CALL DisplayVocabCard(secretWord, wordInfo)
+            RETURN
+        END IF
+    END WHILE
+
+    // Player ran out of attempts
+    DISPLAY "Out of tries! The term was: " + secretWord
+    CALL DisplayVocabCard(secretWord, wordInfo)
+    missedWords[secretWord] ← wordInfo
+END PROCEDURE
+
+
+PROCEDURE ReviewMissedWords(missedWords)
+    IF missedWords IS EMPTY THEN
+        DISPLAY "You didn't miss any words this session! Great job."
+        RETURN
+    END IF
+
+    DISPLAY "=== MISSED WORDS REVIEW QUIZ ==="
+    score ← 0
+
+    FOR EACH (word, info) IN missedWords DO
+        DISPLAY "Definition (" + info.pos + "): " + info.def
+        INPUT answer
+        CONVERT answer TO UPPERCASE and TRIM whitespace
+
+        IF answer EQUALS word THEN
+            DISPLAY "Correct!"
+            score ← score + 1
+        ELSE
+            DISPLAY "Not quite. The term was " + word
+        END IF
+    END FOR
+
+    DISPLAY "Review Complete: " + score + "/" + LENGTH(missedWords) + " recalled correctly."
+END PROCEDURE
