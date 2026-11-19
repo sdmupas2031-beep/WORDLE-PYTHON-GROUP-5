@@ -15,3 +15,30 @@ DEFINE STEM_WORD_BANK AS Dictionary OF Categories:
         "ALLOY": { pos, def, example },
         ...
     }
+HELPER FUNCTIONS
+
+FUNCTION ChooseCategory()
+    DISPLAY "=== STEM WORDLE: SELECT A CATEGORY ==="
+    categories ← LIST of keys from STEM_WORD_BANK
+
+    FOR i FROM 1 TO LENGTH(categories) DO
+        DISPLAY i + ". " + categories[i]
+    END FOR
+    DISPLAY (LENGTH(categories) + 1) + ". All STEM Categories (Mixed)"
+
+    LOOP FOREVER
+        INPUT choice
+        IF choice IS a valid number between 1 AND LENGTH(categories) THEN
+            selectedName ← categories[choice]
+            RETURN (selectedName, STEM_WORD_BANK[selectedName])
+        ELSE IF choice EQUALS LENGTH(categories) + 1 THEN
+            combinedDict ← EMPTY Dictionary
+            FOR EACH categoryDict IN STEM_WORD_BANK VALUES DO
+                MERGE categoryDict INTO combinedDict
+            END FOR
+            RETURN ("All STEM Categories", combinedDict)
+        ELSE
+            DISPLAY "Invalid choice. Please try again."
+        END IF
+    END LOOP
+END FUNCTION
