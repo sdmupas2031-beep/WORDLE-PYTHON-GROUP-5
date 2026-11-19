@@ -1,3 +1,14 @@
 START
 // Initialize ANSI colors and word list (APPLE, BRAVE, CRANE, etc.)
 SET WORD_BANK = [list of 5-letter words]
+
+FUNCTION pick_random_word(words)
+    RETURN random word from words
+END FUNCTION
+
+FUNCTION get_valid_guess(word_length)
+    WHILE TRUE
+        PROMPT and GET guess, convert to uppercase
+        IF guess is valid length and alphabetic THEN RETURN guess
+    END WHILE
+END FUNCTION
