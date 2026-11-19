@@ -42,3 +42,30 @@ FUNCTION ChooseCategory()
         END IF
     END LOOP
 END FUNCTION
+
+FUNCTION GetValidGuess(wordLength, wordInfo, hintUsed)
+    LOOP FOREVER
+        IF hintUsed IS FALSE THEN
+            DISPLAY "Enter a " + wordLength + "-letter word (or type 'HINT' for definition): "
+        ELSE
+            DISPLAY "Enter a " + wordLength + "-letter word: "
+        END IF
+
+        INPUT guess
+        CONVERT guess TO UPPERCASE and TRIM whitespace
+
+        IF guess EQUALS "HINT" THEN
+            DISPLAY "[HINT] (" + wordInfo.pos + ") " + wordInfo.def
+            hintUsed ← TRUE
+            CONTINUE LOOP
+        END IF
+
+        IF LENGTH(guess) EQUALS wordLength AND guess CONTAINS ONLY LETTERS THEN
+            RETURN (guess, hintUsed)
+        ELSE
+            DISPLAY "Invalid input. Please enter exactly " + wordLength + " letters."
+        END IF
+    END LOOP
+END FUNCTION
+
+
