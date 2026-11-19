@@ -1,1 +1,3 @@
-
+START
+// Initialize ANSI colors and word list (APPLE, BRAVE, CRANE, etc.)
+SET WORD_BANK = [list of 5-letter words]
