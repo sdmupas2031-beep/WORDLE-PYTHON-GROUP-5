@@ -1,170 +1,31 @@
- DATA STRUCTURES
-DEFINE STEM_WORD_BANK AS Dictionary OF Categories:
-    "Computer Science": {
-        "ARRAY": { pos, def, example },
-        "CACHE": { pos, def, example },
-        ...
-    },
-    "Biology & Medicine": {
-        "AXONS": { pos, def, example },
-        "BIOME": { pos, def, example },
-        ...
-    },
-    "Physics & Chemistry": {
-        "ANODE": { pos, def, example },
-        "ALLOY": { pos, def, example },
-        ...
-    }
-HELPER FUNCTIONS
+START PROGRAM
 
-FUNCTION ChooseCategory()
-    DISPLAY "=== STEM WORDLE: SELECT A CATEGORY ==="
-    categories ← LIST of keys from STEM_WORD_BANK
+INITIALIZATION & HELPERS
+DEFINE ANSI colors and STEM_WORD_BANK (categories with 5-letter words, parts of speech, definitions, and examples).
 
-    FOR i FROM 1 TO LENGTH(categories) DO
-        DISPLAY i + ". " + categories[i]
-    END FOR
-    DISPLAY (LENGTH(categories) + 1) + ". All STEM Categories (Mixed)"
-
-    LOOP FOREVER
-        INPUT choice
-        IF choice IS a valid number between 1 AND LENGTH(categories) THEN
-            selectedName ← categories[choice]
-            RETURN (selectedName, STEM_WORD_BANK[selectedName])
-        ELSE IF choice EQUALS LENGTH(categories) + 1 THEN
-            combinedDict ← EMPTY Dictionary
-            FOR EACH categoryDict IN STEM_WORD_BANK VALUES DO
-                MERGE categoryDict INTO combinedDict
-            END FOR
-            RETURN ("All STEM Categories", combinedDict)
-        ELSE
-            DISPLAY "Invalid choice. Please try again."
-        END IF
-    END LOOP
+FUNCTION choose_category():
+    DISPLAY category menu (Computer Science, Biology & Medicine, Physics & Chemistry, or Mixed).
+    LOOP until valid choice is made and return the selected category dictionary.
 END FUNCTION
 
-FUNCTION GetValidGuess(wordLength, wordInfo, hintUsed)
-    LOOP FOREVER
-        IF hintUsed IS FALSE THEN
-            DISPLAY "Enter a " + wordLength + "-letter word (or type 'HINT' for definition): "
-        ELSE
-            DISPLAY "Enter a " + wordLength + "-letter word: "
-        END IF
-
-        INPUT guess
-        CONVERT guess TO UPPERCASE and TRIM whitespace
-
-        IF guess EQUALS "HINT" THEN
-            DISPLAY "[HINT] (" + wordInfo.pos + ") " + wordInfo.def
-            hintUsed ← TRUE
-            CONTINUE LOOP
-        END IF
-
-        IF LENGTH(guess) EQUALS wordLength AND guess CONTAINS ONLY LETTERS THEN
-            RETURN (guess, hintUsed)
-        ELSE
-            DISPLAY "Invalid input. Please enter exactly " + wordLength + " letters."
-        END IF
-    END LOOP
+FUNCTION pick_random_word(category_dict):
+    RETURN a random word and its metadata from the selected category.
 END FUNCTION
 
-FUNCTION EvaluateGuess(secret, guess)
-    result ← ARRAY of size LENGTH(secret) filled with empty strings
-    secretChars ← ARRAY of characters from secret
-
-    // First pass: Check for exact position matches (Green)
-    FOR i FROM 0 TO LENGTH(guess) - 1 DO
-        IF guess[i] EQUALS secretChars[i] THEN
-            result[i] ← FORMAT_GREEN(guess[i])
-            secretChars[i] ← NULL   // Mark character as matched
-        END IF
-    END FOR
-
-    // Second pass: Check for misplaced letters (Yellow) or non-matches (Gray)
-    FOR i FROM 0 TO LENGTH(guess) - 1 DO
-        IF result[i] IS EMPTY THEN
-            IF guess[i] EXISTS IN secretChars THEN
-                result[i] ← FORMAT_YELLOW(guess[i])
-                index ← FIRST_INDEX_OF(guess[i], secretChars)
-                secretChars[index] ← NULL
-            ELSE
-                result[i] ← FORMAT_GRAY(guess[i])
-            END IF
-        END IF
-    END FOR
-
-RETURN JOIN(result, " ")
+FUNCTION get_valid_guess(word_length, word_info, hint_used):
+    LOOP to get user input.
+    IF user enters "HINT", display part of speech and definition, then continue.
+    RETURN uppercase guess once it matches the required length and character type.
 END FUNCTION
 
+FUNCTION evaluate_guess(secret, guess):
+    COMPARE guess against secret word.
+    FIRST PASS: Mark exact letter matches as GREEN.
+    SECOND PASS: Mark misplaced letters as YELLOW and unused letters as GRAY.
+    RETURN colored feedback string.
+END FUNCTION
 
-PROCEDURE DisplayVocabCard(word, info)
-    DISPLAY "--- VOCABULARY CARD ---"
-    DISPLAY word + " (" + info.pos + ")"
-    DISPLAY "Definition: " + info.def
-    DISPLAY "Example: " + info.example
-    DISPLAY "-----------------------"
-END PROCEDURE
+FUNCTION display_vocab_card(word, info):
+    DISPLAY formatted card with word, part of speech, definition, and example.
+END FUNCTION
 
-PROCEDURE PlayRound(missedWords)
-    (categoryName, categoryDict) ← ChooseCategory()
-    (secretWord, wordInfo) ← PickRandomWord(categoryDict)
-
-    maxAttempts ← 6
-    attempt ← 0
-    guessHistory ← EMPTY List
-    hintUsed ← FALSE
-
-    DISPLAY "Category: " + categoryName
-    DISPLAY "Guess the " + LENGTH(secretWord) + "-letter STEM term in " + maxAttempts + " tries."
-
-    WHILE attempt < maxAttempts DO
-        (guess, hintUsed) ← GetValidGuess(LENGTH(secretWord), wordInfo, hintUsed)
-        attempt ← attempt + 1
-
-        coloredFeedback ← EvaluateGuess(secretWord, guess)
-        APPEND coloredFeedback TO guessHistory
-
-        DISPLAY "--- Board ---"
-        FOR EACH row IN guessHistory DO
-            DISPLAY row
-        END FOR
-        DISPLAY "Attempts left: " + (maxAttempts - attempt)
-
-        IF guess EQUALS secretWord THEN
-            DISPLAY "Correct! You solved it in " + attempt + " tries!"
-            CALL DisplayVocabCard(secretWord, wordInfo)
-            RETURN
-        END IF
-    END WHILE
-
-    // Player ran out of attempts
-    DISPLAY "Out of tries! The term was: " + secretWord
-    CALL DisplayVocabCard(secretWord, wordInfo)
-    missedWords[secretWord] ← wordInfo
-END PROCEDURE
-
-
-PROCEDURE ReviewMissedWords(missedWords)
-    IF missedWords IS EMPTY THEN
-        DISPLAY "You didn't miss any words this session! Great job."
-        RETURN
-    END IF
-
-    DISPLAY "=== MISSED WORDS REVIEW QUIZ ==="
-    score ← 0
-
-    FOR EACH (word, info) IN missedWords DO
-        DISPLAY "Definition (" + info.pos + "): " + info.def
-        INPUT answer
-        CONVERT answer TO UPPERCASE and TRIM whitespace
-
-        IF answer EQUALS word THEN
-            DISPLAY "Correct!"
-            score ← score + 1
-        ELSE
-            DISPLAY "Not quite. The term was " + word
-        END IF
-    END FOR
-
-    DISPLAY "Review Complete: " + score + "/" + LENGTH(missedWords) + " recalled correctly."
-END PROCEDURE
