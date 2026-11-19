@@ -1,1 +1,16 @@
+#CREATING FUNCTIONS
+def pick_random_word(words):
+    """Selects and returns a random word from the array."""
+    return random.choice(words)
+def get_valid_guess(word_length):
+    """Prompts the user until they enter a valid 5-letter alphabetic guess."""
+    while True:
+        guess = input(f"Enter a {word_length}-letter word: ").strip().upper()
+        if len(guess) == word_length and guess.isalpha():
+            return guess
+        print(f"Invalid input. Please enter exactly {word_length} letters.")
 
+def evaluate_guess(secret, guess):
+    """Compares the guess against the secret word and returns a color-coded string."""
+    result = [""] * len(secret) # Array to hold formatted letters
+    secret_chars = list(secret) # Convert secret word into an array of characters
