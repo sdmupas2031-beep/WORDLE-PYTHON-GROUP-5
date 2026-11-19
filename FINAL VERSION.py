@@ -1,4 +1,30 @@
 #CREATING FUNCTIONS
+# Clean up any None entries just in case
+for cat in STEM_WORD_BANK:
+    STEM_WORD_BANK[cat] = {k: v for k, v in STEM_WORD_BANK[cat].items() if v is not None}
+
+def choose_category():
+    """Displays a menu for the user to pick a STEM category."""
+    categories = list(STEM_WORD_BANK.keys())
+    print(f"\n{CYAN}{BOLD}=== STEM WORDLE: SELECT A CATEGORY ==={RESET}")
+    for idx, name in enumerate(categories, start=1):
+        print(f"  {idx}. {name} ({len(STEM_WORD_BANK[name])} words)")
+    print(f"  {len(categories) + 1}. All STEM Categories (Mixed)")
+
+    while True:
+        choice = input("\nEnter category number: ").strip()
+        if choice.isdigit():
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(categories):
+                selected = categories[choice_num - 1]
+                return selected, STEM_WORD_BANK[selected]
+            elif choice_num == len(categories) + 1:
+                # Merge all categories into one dictionary
+                combined = {}
+                for cat_dict in STEM_WORD_BANK.values():
+                    combined.update(cat_dict)
+                return "All STEM Categories", combined
+        print("Invalid choice. Please enter a valid number from the menu.")
 def pick_random_word(words):
     """Selects and returns a random word from the array."""
     return random.choice(words)
