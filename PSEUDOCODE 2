@@ -92,3 +92,15 @@ FUNCTION EvaluateGuess(secret, guess)
             END IF
         END IF
     END FOR
+
+RETURN JOIN(result, " ")
+END FUNCTION
+
+
+PROCEDURE DisplayVocabCard(word, info)
+    DISPLAY "--- VOCABULARY CARD ---"
+    DISPLAY word + " (" + info.pos + ")"
+    DISPLAY "Definition: " + info.def
+    DISPLAY "Example: " + info.example
+    DISPLAY "-----------------------"
+END PROCEDURE
