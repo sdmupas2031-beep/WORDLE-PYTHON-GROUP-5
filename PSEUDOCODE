@@ -18,3 +18,16 @@ FUNCTION evaluate_guess(secret, guess)
     // Pass 2: Mark misplaced letters as YELLOW, and unmatched as GRAY
     RETURN formatted color string array
 END FUNCTION
+
+FUNCTION play_game()
+    SET secret_word = pick_random_word(WORD_BANK)
+    SET max_attempts = 6, attempt = 0
+    WHILE attempt < max_attempts
+        GET valid guess, increment attempt, evaluate guess, and display board
+        IF guess equals secret_word THEN DISPLAY win message and EXIT
+    END WHILE
+    DISPLAY loss message with secret_word
+END FUNCTION
+
+CALL play_game()
+END
