@@ -1,6 +1,6 @@
 START PROGRAM
 
-INITIALIZATION & HELPERS
+#INITIALIZATION & HELPERS
 DEFINE ANSI colors and STEM_WORD_BANK (categories with 5-letter words, parts of speech, definitions, and examples).
 
 FUNCTION choose_category():
@@ -28,4 +28,28 @@ END FUNCTION
 FUNCTION display_vocab_card(word, info):
     DISPLAY formatted card with word, part of speech, definition, and example.
 END FUNCTION
+
+# GAME LOGIC & REVIEW
+FUNCTION play_round(missed_words):
+    SELECT category and random word.
+    LOOP up to 6 attempts: get guess, evaluate feedback, update board display.
+    IF guess matches secret, display vocab card and exit round.
+    IF attempts run out, display vocab card and save word to missed_words.
+END FUNCTION
+
+FUNCTION review_missed_words(missed_words):
+    IF missed_words is not empty, quiz the user on definitions/terms and track score.
+END FUNCTION
+
+// 3. MAIN EXECUTION
+FUNCTION main():
+    CREATE missed_words dictionary.
+    LOOP: play a round of STEM Wordle, then ask if user wants to play again.
+    IF there are missed words, offer a review quiz.
+    DISPLAY exit message.
+END FUNCTION
+
+CALL main()
+END PROGRAM
+
 
