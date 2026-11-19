@@ -29,13 +29,23 @@ def pick_random_word(category_dict):
     """Selects and returns a random (word, info_dict) pair from the chosen category."""
     word = random.choice(list(category_dict.keys()))
     return word, category_dict[word]
-def get_valid_guess(word_length):
-    """Prompts the user until they enter a valid 5-letter alphabetic guess."""
+
+def get_valid_guess(word_length, word_info, hint_used):
+    """Prompts the user for a valid 5-letter guess or allows typing 'HINT'."""
     while True:
-        guess = input(f"Enter a {word_length}-letter word: ").strip().upper()
+        prompt = f"Enter a {word_length}-letter word"
+        if not hint_used:
+            prompt += " (or type 'HINT' for definition)"
+        guess = input(f"{prompt}: ").strip().upper()
+
+        if guess == "HINT":
+            print(f"\n{CYAN}[HINT] ({word_info['pos']}) {word_info['def']}{RESET}\n")
+            hint_used = True
+            continue
+
         if len(guess) == word_length and guess.isalpha():
-            return guess
-        print(f"Invalid input. Please enter exactly {word_length} letters.")
+            return guess, hint_used
+            print(f"Invalid input. Please enter exactly {word_length} letters.")
 
 def evaluate_guess(secret, guess):
     """Compares the guess against the secret word and returns a color-coded string."""
