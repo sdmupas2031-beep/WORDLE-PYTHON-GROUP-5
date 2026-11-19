@@ -12,3 +12,9 @@ FUNCTION get_valid_guess(word_length)
         IF guess is valid length and alphabetic THEN RETURN guess
     END WHILE
 END FUNCTION
+
+FUNCTION evaluate_guess(secret, guess)
+    // Pass 1: Mark exact matches as GREEN
+    // Pass 2: Mark misplaced letters as YELLOW, and unmatched as GRAY
+    RETURN formatted color string array
+END FUNCTION
