@@ -25,9 +25,10 @@ def choose_category():
                     combined.update(cat_dict)
                 return "All STEM Categories", combined
         print("Invalid choice. Please enter a valid number from the menu.")
-def pick_random_word(words):
-    """Selects and returns a random word from the array."""
-    return random.choice(words)
+def pick_random_word(category_dict):
+    """Selects and returns a random (word, info_dict) pair from the chosen category."""
+    word = random.choice(list(category_dict.keys()))
+    return word, category_dict[word]
 def get_valid_guess(word_length):
     """Prompts the user until they enter a valid 5-letter alphabetic guess."""
     while True:
