@@ -68,28 +68,27 @@ FUNCTION GetValidGuess(wordLength, wordInfo, hintUsed)
     END LOOP
 END FUNCTION
 
-FUNCTION GetValidGuess(wordLength, wordInfo, hintUsed)
-    LOOP FOREVER
-        IF hintUsed IS FALSE THEN
-            DISPLAY "Enter a " + wordLength + "-letter word (or type 'HINT' for definition): "
-        ELSE
-            DISPLAY "Enter a " + wordLength + "-letter word: "
+FUNCTION EvaluateGuess(secret, guess)
+    result ← ARRAY of size LENGTH(secret) filled with empty strings
+    secretChars ← ARRAY of characters from secret
+
+    // First pass: Check for exact position matches (Green)
+    FOR i FROM 0 TO LENGTH(guess) - 1 DO
+        IF guess[i] EQUALS secretChars[i] THEN
+            result[i] ← FORMAT_GREEN(guess[i])
+            secretChars[i] ← NULL   // Mark character as matched
         END IF
+    END FOR
 
-        INPUT guess
-        CONVERT guess TO UPPERCASE and TRIM whitespace
-
-        IF guess EQUALS "HINT" THEN
-            DISPLAY "[HINT] (" + wordInfo.pos + ") " + wordInfo.def
-            hintUsed ← TRUE
-            CONTINUE LOOP
+    // Second pass: Check for misplaced letters (Yellow) or non-matches (Gray)
+    FOR i FROM 0 TO LENGTH(guess) - 1 DO
+        IF result[i] IS EMPTY THEN
+            IF guess[i] EXISTS IN secretChars THEN
+                result[i] ← FORMAT_YELLOW(guess[i])
+                index ← FIRST_INDEX_OF(guess[i], secretChars)
+                secretChars[index] ← NULL
+            ELSE
+                result[i] ← FORMAT_GRAY(guess[i])
+            END IF
         END IF
-
-        IF LENGTH(guess) EQUALS wordLength AND guess CONTAINS ONLY LETTERS THEN
-            RETURN (guess, hintUsed)
-        ELSE
-            DISPLAY "Invalid input. Please enter exactly " + wordLength + " letters."
-        END IF
-    END LOOP
-END FUNCTION
-
+    END FOR
