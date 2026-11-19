@@ -1,0 +1,17 @@
+ DATA STRUCTURES
+DEFINE STEM_WORD_BANK AS Dictionary OF Categories:
+    "Computer Science": {
+        "ARRAY": { pos, def, example },
+        "CACHE": { pos, def, example },
+        ...
+    },
+    "Biology & Medicine": {
+        "AXONS": { pos, def, example },
+        "BIOME": { pos, def, example },
+        ...
+    },
+    "Physics & Chemistry": {
+        "ANODE": { pos, def, example },
+        "ALLOY": { pos, def, example },
+        ...
+    }
