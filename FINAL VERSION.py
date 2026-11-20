@@ -69,25 +69,38 @@ def evaluate_guess(secret, guess):
     return " ".join(result)
     
 
-    def play_game():
-    max_attempts = 6
-    guess_history = []
-    #Loops for the attempts, sheena, note that there is no clear "board" of this so basin dili siya mu work, just re check pls
-    for attempt in range(1, max_attempts + 1):
-        print(f"Attempt {attempt} of {max_attempts}")
-        guess = get_valid_guess(len(secret_word))
-
-        feedback = evaluate_guess(secret_word, guess)
-        guess_history.append(feedback)
-
-        display(guess_history)
-        print(f"Attempts left: {max_attempts - attempt}\n")
-
-        if guess == secret_word:
-            print(f"{GREEN} You won in {attempt} tries.{RESET}")
-            return
+    def display_vocab_card(word, info):
+        """Prints the educational breakdown of the target word."""
+        print(f"\n{CYAN}--- VOCABULARY CARD ---{RESET}")
+        print(f"{BOLD}{word}{RESET} ({info['pos']})")
+        print(f"  {BOLD}Definition:{RESET} {info['def']}")
+        print(f"  {BOLD}Example:{RESET}    \"{info['example']}\"")
+        print(f"{CYAN}-----------------------{RESET}\n")
     
-    print(f"{RED}Out of tries! The word was: {secret_word}{RESET}")
 
-if __name__ == "__main__":
-    play_game()
+    def play_round(missed_words):
+        """Plays a single round of STEM Wordle and records missed words."""
+        category_name, category_dict = choose_category()
+        secret_word, word_info = pick_random_word(category_dict)
+        max_attempts = 6
+        attempt = 0
+        guess_history = []
+        hint_aused = False
+        
+        print(f"\n{BOLD}Category:{RESET} {category_name}")
+        print(f"Guess the {len(secret_word)}-letter STEM term in {max_attempts} tries.\n")
+        
+        while attempt < max_attempts:
+            guess, hint_used = get_valid_guess(len(secret_word), word_info, hint_used)
+            attempt += 1
+            colored_feedback = evaluate_guess(secret_word, guess)
+            guess_history.append(colored_feedback)
+            
+            print("\n--- Board ---")
+            for row in guess_history:
+                print(row)
+            print(f"Attempts left: {max_attempts - attempt}\n")
+
+
+    print(f"\n{BOLD}Category:{RESET} {category_name}")
+    print(f"Guess the {len(secret_word)}-letter STEM term in {max_attempts} tries.\n")
