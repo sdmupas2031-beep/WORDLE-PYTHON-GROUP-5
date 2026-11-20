@@ -100,7 +100,11 @@ def evaluate_guess(secret, guess):
             for row in guess_history:
                 print(row)
             print(f"Attempts left: {max_attempts - attempt}\n")
-
-
-    print(f"\n{BOLD}Category:{RESET} {category_name}")
-    print(f"Guess the {len(secret_word)}-letter STEM term in {max_attempts} tries.\n")
+            
+            if guess == secret_word:
+                print(f"{GREEN}Correct! You solved it in {attempt} tries!{RESET}")
+                display_vocab_card(secret_word, word_info)
+                return
+        print(f"{RED}Out of tries! The term was: {secret_word}{RESET}")
+        display_vocab_card(secret_word, word_info)
+        missed_words[secret_word] = word_info
