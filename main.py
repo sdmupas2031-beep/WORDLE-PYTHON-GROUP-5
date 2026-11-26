@@ -1,0 +1,271 @@
+import random
+
+# Standard ANSI Color Codes
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+GRAY = "\033[90m"
+RED = "\033[91m"
+CYAN = "\033[96m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+# 1. NESTED DICTIONARIES: Categorized STEM Word Bank
+STEM_WORD_BANK = {
+    "Computer Science": {
+        "ARRAY": {
+            "pos": "noun",
+            "def": "A data structure consisting of a collection of elements identified by index.",
+            "example": "We stored the daily temperature readings in a one-dimensional array."
+        },
+        "CACHE": {
+            "pos": "noun",
+            "def": "High-speed hardware or software storage that saves data for faster future access.",
+            "example": "Clearing your browser cache can resolve outdated page formatting."
+        },
+        "LOGIC": {
+            "pos": "noun",
+            "def": "A system of reasoning principles used to design circuits and algorithms.",
+            "example": "Boolean logic relies on true and false values to control program flow."
+        },
+        "PARSE": {
+            "pos": "verb",
+            "def": "To analyze a string of text or code into logical syntactic components.",
+            "example": "The script will parse the CSV file and extract only the email addresses."
+        },
+        "QUEUE": {
+            "pos": "noun",
+            "def": "A linear data structure that follows the First-In-First-Out (FIFO) principle.",
+            "example": "Print jobs are placed in a queue and processed in the order received."
+        },
+        "STACK": {
+            "pos": "noun",
+            "def": "A linear data structure that follows the Last-In-First-Out (LIFO) principle.",
+            "example": "The undo feature in text editors typically relies on a stack."
+        }
+    },
+    "Biology & Medicine": {
+        "AXONS": {
+            "pos": "noun",
+            "def": "Long nerve fibers that conduct electrical impulses away from a neuron's cell body.",
+            "example": "Myelin sheaths insulate axons to speed up signal transmission in the brain."
+        },
+        "BIOME": {
+            "pos": "noun",
+            "def": "A large naturally occurring community of flora and fauna occupying a major habitat.",
+            "example": "The tropical rainforest is the most biodiverse terrestrial biome on Earth."
+        },
+        "ENZYM": None, # Placeholder removed below—kept strictly 5-letter real words
+        "GENUS": {
+            "pos": "noun",
+            "def": "A taxonomic rank used in biological classification above species and below family.",
+            "example": "Humans belong to the genus Homo, alongside extinct relatives like Homo erectus."
+        },
+        "LIPID": {
+            "pos": "noun",
+            "def": "Organic compounds, including fats and oils, that are insoluble in water.",
+            "example": "Phospholipids form the protective bilayer membrane surrounding every living cell."
+        },
+        "RENAL": {
+            "pos": "adjective",
+            "def": "Relating to or affecting the kidneys.",
+            "example": "The renal system filters waste products from the bloodstream."
+        },
+        "TOXIN": {
+            "pos": "noun",
+            "def": "A poisonous substance produced within living cells or organisms.",
+            "example": "Certain marine bacteria produce a potent toxin that accumulates in shellfish."
+        }
+    },
+    "Physics & Chemistry": {
+        "ANODE": {
+            "pos": "noun",
+            "def": "The positively charged electrode by which electrons leave a device.",
+            "example": "During discharge, oxidation occurs at the battery's anode."
+        },
+        "ALLOY": {
+            "pos": "noun",
+            "def": "A metallic substance composed of two or more elements, at least one being a metal.",
+            "example": "Bronze is an alloy made primarily of copper and tin."
+        },
+        "INERT": {
+            "pos": "adjective",
+            "def": "Chemically inactive; lacking the ability or strength to react with other substances.",
+            "example": "Argon is an inert noble gas commonly used inside incandescent light bulbs."
+        },
+        "JOULE": {
+            "pos": "noun",
+            "def": "The SI derived unit of energy, work, or amount of heat.",
+            "example": "Lifting a small apple one meter straight up requires roughly one joule of energy."
+        },
+        "MOLAR": {
+            "pos": "adjective",
+            "def": "Relating to one mole of a substance or its concentration in a solution.",
+            "example": "The chemist prepared a 1.0 molar solution of hydrochloric acid."
+        },
+        "QUARK": {
+            "pos": "noun",
+            "def": "An elementary particle and fundamental constituent of matter that forms protons and neutrons.",
+            "example": "A proton is composed of two up quarks and one down quark."
+        }
+    }
+}
+
+# Clean up any None entries just in case
+for cat in STEM_WORD_BANK:
+    STEM_WORD_BANK[cat] = {k: v for k, v in STEM_WORD_BANK[cat].items() if v is not None}
+
+
+def choose_category():
+    """Displays a menu for the user to pick a STEM category."""
+    categories = list(STEM_WORD_BANK.keys())
+    print(f"\n{CYAN}{BOLD}=== STEM WORDLE: SELECT A CATEGORY ==={RESET}")
+    for idx, name in enumerate(categories, start=1):
+        print(f"  {idx}. {name} ({len(STEM_WORD_BANK[name])} words)")
+    print(f"  {len(categories) + 1}. All STEM Categories (Mixed)")
+
+    while True:
+        choice = input("\nEnter category number: ").strip()
+        if choice.isdigit():
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(categories):
+                selected = categories[choice_num - 1]
+                return selected, STEM_WORD_BANK[selected]
+            elif choice_num == len(categories) + 1:
+                # Merge all categories into one dictionary
+                combined = {}
+                for cat_dict in STEM_WORD_BANK.values():
+                    combined.update(cat_dict)
+                return "All STEM Categories", combined
+        print("Invalid choice. Please enter a valid number from the menu.")
+
+
+def pick_random_word(category_dict):
+    """Selects and returns a random (word, info_dict) pair from the chosen category."""
+    word = random.choice(list(category_dict.keys()))
+    return word, category_dict[word]
+
+
+def get_valid_guess(word_length, word_info, hint_used):
+    """Prompts the user for a valid 5-letter guess or allows typing 'HINT'."""
+    while True:
+        prompt = f"Enter a {word_length}-letter word"
+        if not hint_used:
+            prompt += " (or type 'HINT' for definition)"
+        guess = input(f"{prompt}: ").strip().upper()
+
+        if guess == "HINT":
+            print(f"\n{CYAN}[HINT] ({word_info['pos']}) {word_info['def']}{RESET}\n")
+            hint_used = True
+            continue
+
+        if len(guess) == word_length and guess.isalpha():
+            return guess, hint_used
+        print(f"Invalid input. Please enter exactly {word_length} letters.")
+
+
+def evaluate_guess(secret, guess):
+    """Compares the guess against the secret word and returns a color-coded string."""
+    result = [""] * len(secret)
+    secret_chars = list(secret)
+
+    # First pass: Exact matches (Green)
+    for i in range(len(guess)):
+        if guess[i] == secret_chars[i]:
+            result[i] = f"{GREEN}{guess[i]}{RESET}"
+            secret_chars[i] = None
+
+    # Second pass: Misplaced letters (Yellow) or misses (Gray)
+    for i in range(len(guess)):
+        if result[i] == "":
+            if guess[i] in secret_chars:
+                result[i] = f"{YELLOW}{guess[i]}{RESET}"
+                secret_chars[secret_chars.index(guess[i])] = None
+            else:
+                result[i] = f"{GRAY}{guess[i]}{RESET}"
+
+    return " ".join(result)
+
+
+def display_vocab_card(word, info):
+    """Prints the educational breakdown of the target word."""
+    print(f"\n{CYAN}--- VOCABULARY CARD ---{RESET}")
+    print(f"{BOLD}{word}{RESET} ({info['pos']})")
+    print(f"  {BOLD}Definition:{RESET} {info['def']}")
+    print(f"  {BOLD}Example:{RESET}    \"{info['example']}\"")
+    print(f"{CYAN}-----------------------{RESET}\n")
+
+
+def play_round(missed_words):
+    """Plays a single round of STEM Wordle and records missed words."""
+    category_name, category_dict = choose_category()
+    secret_word, word_info = pick_random_word(category_dict)
+    max_attempts = 6
+    attempt = 0
+    guess_history = []
+    hint_used = False
+
+    print(f"\n{BOLD}Category:{RESET} {category_name}")
+    print(f"Guess the {len(secret_word)}-letter STEM term in {max_attempts} tries.\n")
+
+    while attempt < max_attempts:
+        guess, hint_used = get_valid_guess(len(secret_word), word_info, hint_used)
+        attempt += 1
+
+        colored_feedback = evaluate_guess(secret_word, guess)
+        guess_history.append(colored_feedback)
+
+        print("\n--- Board ---")
+        for row in guess_history:
+            print(row)
+        print(f"Attempts left: {max_attempts - attempt}\n")
+
+        if guess == secret_word:
+            print(f"{GREEN}Correct! You solved it in {attempt} tries!{RESET}")
+            display_vocab_card(secret_word, word_info)
+            return
+
+    print(f"{RED}Out of tries! The term was: {secret_word}{RESET}")
+    display_vocab_card(secret_word, word_info)
+    missed_words[secret_word] = word_info
+
+
+def review_missed_words(missed_words):
+    """Quizzes the player on any words they failed to guess during the session."""
+    if not missed_words:
+        print(f"\n{GREEN}You didn't miss any words this session! Great job.{RESET}")
+        return
+
+    print(f"\n{CYAN}{BOLD}=== MISSED WORDS REVIEW QUIZ ==={RESET}")
+    print("Type the STEM term that matches each definition:\n")
+    score = 0
+
+    for word, info in missed_words.items():
+        print(f"Definition ({info['pos']}): {info['def']}")
+        answer = input("Your answer: ").strip().upper()
+        if answer == word:
+            print(f"{GREEN}Correct!{RESET}\n")
+            score += 1
+        else:
+            print(f"{RED}Not quite. The term was {BOLD}{word}{RESET}.\n")
+
+    print(f"Review Complete: {score}/{len(missed_words)} recalled correctly.")
+
+
+def main():
+    missed_words = {}
+    while True:
+        play_round(missed_words)
+        again = input("Play another round? (Y/N): ").strip().upper()
+        if again != "Y":
+            break
+
+    if missed_words:
+        do_review = input("\nWould you like to quiz yourself on the words you missed? (Y/N): ").strip().upper()
+        if do_review == "Y":
+            review_missed_words(missed_words)
+
+    print("\nThanks for playing STEM Wordle!")
+
+
+if __name__ == "__main__":
+    main()
